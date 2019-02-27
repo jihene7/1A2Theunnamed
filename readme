@@ -1,0 +1,12 @@
+/*Work By TriPlay 2016-2017*/
+
+
+1/changez vos SDL_Surface suivant vos surfaces.
+2/changez vos SDL_Rect pour vos positions d'images ( chaque position 3andha x et y )
+3/SDL event : evenement souris + clavier
+4/la ligne  musique = Mix_LoadMUS("music.mp3");
+
+
+
+Cordialement..
+
