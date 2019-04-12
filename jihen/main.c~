@@ -1,0 +1,334 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <SDL/SDL.h>
+#include <math.h>
+#include <time.h>
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_mixer.h>
+#include <SDL/SDL_ttf.h>
+#include <string.h>
+#include "jeux.h"
+#include "animation.c"
+#include "scrolling.c"
+#include "finanimation.c"
+
+
+
+
+int main()
+{
+int run=1;
+int num ;
+int x ;
+int n=4,affichage=1,press_p=0;
+int ka=0 , coli;
+int c=-1,clique ;
+SDL_Surface *ecran=NULL   ;
+
+
+SDL_Rect position;
+
+
+SDL_Event event;
+
+
+SDL_Init(SDL_INIT_EVERYTHING);
+
+TTF_Init();
+
+ecran=SDL_SetVideoMode(1200,800,32,SDL_HWSURFACE|SDL_RESIZABLE);
+
+int e ;
+
+
+
+ 
+while (run)
+
+{
+
+
+
+
+
+
+
+
+
+
+
+		SDL_PollEvent (&event);
+
+		switch(event.type)
+		{
+			case SDL_QUIT:
+			run=0;
+			break;
+
+
+
+
+
+				case SDL_KEYDOWN:
+				{
+									switch(event.key.keysym.sym)
+{
+										case SDLK_p:
+									{
+										press_p=1;
+									}
+
+									break;
+
+case SDLK_DOWN:
+{
+	num = 0 ; // num = 0 cad on faire la deplacement et scrolling et animation par rapport a la personnage 1
+
+										ezdin[0].button=2;
+
+									deplacment_Personnage_clavier (ezdin,num);
+
+									animation_Personnage (ezdin,num);
+
+ezdin[0].sens=2;
+
+
+map[0].buttoncameradown=1;
+
+									scrolling (map ,ecran , ezdin);
+ezdin[0].clavierdown=1;
+}
+
+break;
+
+case SDLK_UP:
+{
+ezdin[0].button=8;
+
+num = 0 ;									deplacment_Personnage_clavier (ezdin,num);
+
+									animation_Personnage (ezdin ,  num);
+
+	ezdin[0].sens=8;
+
+	map[0].buttoncameraup=1;
+
+									scrolling (map ,ecran , ezdin);
+ezdin[0].clavierdown=1;
+}
+break;
+case SDLK_RIGHT:
+{
+ezdin[0].button=6;
+num = 0 ;								deplacment_Personnage_clavier (ezdin, num);
+									animation_Personnage (ezdin, num);
+
+			ezdin[0].sens=6;
+
+		map[0].buttoncameraright=1;
+
+									scrolling (map ,ecran , ezdin);
+ezdin[0].clavierdown=1;
+									}
+									break;
+									case SDLK_LEFT:
+									{
+ezdin[0].button=4;
+num = 0 ;									deplacment_Personnage_clavier (ezdin , num);
+									animation_Personnage (ezdin , num);
+
+										ezdin[0].sens=4;
+		map[0].buttoncameraleft=1;
+
+									scrolling (map ,ecran , ezdin);
+		ezdin[0].clavierdown=1;
+}
+break;
+  case SDLK_s : //down
+{
+  ezdin[1].button=2;
+
+	num = 1 ;								deplacment_Personnage_clavier (ezdin, num );
+
+									animation_Personnage (ezdin, num);
+
+ezdin[1].sens=2;
+
+
+map[1].buttoncameradown=1;
+
+									scrolling (map ,ecran , ezdin);
+	ezdin[1].clavierdown=1;
+}
+break ;
+case SDLK_d : //right
+ezdin[1].button=6;
+num = 1 ;								deplacment_Personnage_clavier (ezdin, num);
+									animation_Personnage (ezdin, num);
+
+			ezdin[1].sens=6;
+
+		map[1].buttoncameraright=1;
+
+									scrolling (map ,ecran , ezdin);
+ezdin[1].clavierdown=1;
+
+
+break ;
+case SDLK_q : //left
+
+ezdin[1].button=4;
+num = 1 ;									deplacment_Personnage_clavier (ezdin , num);
+									animation_Personnage (ezdin , num);
+
+										ezdin[1].sens=4;
+		map[1].buttoncameraleft=1;
+
+									scrolling (map ,ecran , ezdin);
+		ezdin[1].clavierdown=1;
+
+
+      break ;
+case SDLK_z : //up
+
+ezdin[1].button=8;
+
+num = 1;									deplacment_Personnage_clavier (ezdin,num);
+
+									animation_Personnage (ezdin ,  num);
+
+	ezdin[1].sens=8;
+
+	map[1].buttoncameraup=1;
+
+									scrolling (map ,ecran , ezdin);
+ezdin[1].clavierdown=1;
+
+
+
+break ;
+
+		}
+
+
+
+
+
+				}
+
+				break;
+
+				case SDL_KEYUP:
+				{
+
+					switch(event.key.keysym.sym)
+						{
+
+							case SDLK_UP:
+							{
+
+num = 0 ;
+	map[0].buttoncameraup=0;
+	finanimation (ezdin , num);
+				ezdin[0].clavierdown=0;
+			ezdin[0].button=0;
+							}
+							break;
+							case SDLK_DOWN:
+							{
+
+	map[0].buttoncameradown=0;
+	finanimation (ezdin , num);
+		ezdin[0].clavierdown=0;
+		ezdin[0].button=0;
+
+							}
+							break;
+							case SDLK_LEFT:
+							{
+
+		num = 0 ;
+map[0].buttoncameraleft=0;
+finanimation (ezdin , num );
+			ezdin[0].clavierdown=0;
+				ezdin[0].button=0;
+							}
+							break;
+							case SDLK_RIGHT:
+							{
+
+		num = 0 ;
+map[0].buttoncameraright=0;
+	finanimation (ezdin , num);
+								                       ezdin[0].clavierdown=0;
+		ezdin[0].button=0;
+							}
+							break;
+case SDLK_s : //down
+{
+ num= 1;
+map[1].buttoncameradown=0;
+	finanimation (ezdin , num);
+		ezdin[1].clavierdown=0;
+		ezdin[1].button=0;
+
+
+}
+break ;
+case SDLK_d : //right
+
+num = 1 ;
+map[1].buttoncameraright=0;
+	finanimation (ezdin , num);
+								                       ezdin[1].clavierdown=0;
+		ezdin[1].button=0;
+break ;
+case SDLK_q : //left
+num = 1 ;
+map[1].buttoncameraleft=0;
+finanimation (ezdin , num );
+			ezdin[1].clavierdown=0;
+				ezdin[1].button=0;
+
+break ;
+case SDLK_z : // up
+num = 1;
+	map[1].buttoncameraup=0;
+	finanimation (ezdin , num);
+				ezdin[1].clavierdown=0;
+			ezdin[1].button=0;
+break ;
+
+	}
+
+
+	}
+break;
+
+
+
+
+		}
+
+
+
+
+
+
+
+
+
+
+
+
+SDL_Quit();
+
+
+
+
+
+
+return (0);
+
+}
+

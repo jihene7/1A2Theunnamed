@@ -1,0 +1,4 @@
+prog:scrolling.o
+	gcc scrolling.o -o prog -lSDL -lSDL_image 
+scrolling.o:scrolling.c
+	gcc -c scrolling.c

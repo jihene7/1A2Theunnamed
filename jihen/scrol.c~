@@ -1,0 +1,421 @@
+#ifndef FONCTIONS_H_
+#define FONCTIONS_H_
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 600
+#define PLAYER_WIDTH 100
+#define PLAYER_HEIGHT 200
+#define PLAYER_SPEED 4
+#define TIME_BETWEEN_2_FRAMES 8
+
+enum{WALK_RIGHT, WALK_LEFT, IMMOBILE, JUMP};
+//Valeurs attribuées aux états/directions
+
+
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_mixer.h>
+
+#define RIGHT 1
+#define LEFT 2
+
+#define ENEMY_Height 80
+#define ENEMY_Width 80
+
+#define Backg_W 8000
+#define Backg_H 600
+
+#define MAXF 3
+
+
+/*_________   structure numero 1  ____________ */
+
+
+
+typedef struct Acteurs Acteurs;
+struct Acteurs
+{
+	  SDL_Surface *screen;
+    SDL_Event event ;
+
+	//fond
+	SDL_Surface *fond ;
+	SDL_Rect posFond;
+
+  //fond noir
+  SDL_Surface* backg;
+};
+
+
+
+/*_________   structure numero 2  ____________ */
+
+typedef struct Boutons Boutons ;
+struct Boutons 
+{
+	  SDL_Surface *b1 ;
+    SDL_Surface *b2 ;
+    SDL_Surface *b3 ;
+    SDL_Surface *b4 ;
+    SDL_Surface *b5 ;
+
+    SDL_Rect posB1;
+    SDL_Rect posB2;
+    SDL_Rect posB3;
+    SDL_Rect posB4;
+    SDL_Rect posB5;
+};
+
+/*_________   structure de l hero  ____________ */
+
+typedef struct Hero Hero ;
+struct Hero 
+{
+
+SDL_Surface *sprite;
+
+/* Coordonnées du héros */
+int x , y ;
+
+/* Variables utiles pour l'animation */
+
+int etat  , direction ; 
+
+};
+
+/* prototypes */
+
+
+void updatePlayer(Hero* hero , Acteurs* acteurs, SDL_Rect camera, SDL_Rect* frame) ;
+
+void centerScrollingOnPlayer(Hero hero, Acteurs* acteurs, SDL_Rect* camera);
+
+SDL_Rect AnimationHero(Hero hero);
+//SDL_Rect AnimationHeroRight(Hero hero, Acteurs acteurs);
+
+//SDL_Rect AnimationHeroLeft(Hero hero, Acteurs acteurs);
+#endif /* FONCTIONS_H_ */
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_mixer.h>
+#include "fonctions.h"
+
+
+
+
+
+
+
+
+/*---fonction d initialisation de l hero---*/
+
+
+
+
+
+
+void initializeHero(Hero* hero)
+{
+
+hero->sprite = SDL_LoadBMP("sprite_hero_right.bmp");
+SDL_SetColorKey(hero->sprite, SDL_SRCCOLORKEY, SDL_MapRGB(hero->sprite->format, 255, 255, 255));
+
+
+//Indique l'état et la direction de notre héros
+hero->direction = RIGHT;
+hero->etat = IMMOBILE;
+
+//Réinitialise le timer de l'animation et la frame
+
+
+/* Coordonnées de démarrage de notre héros */
+hero->x = 48 ;
+hero->y = 309 ;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+void centerScrollingOnPlayer(Hero hero, Acteurs* acteurs, SDL_Rect* camera)
+{
+  if(acteurs->event.type == SDL_KEYDOWN)
+  {
+    if(acteurs->event.key.keysym.sym == SDLK_RIGHT)
+  {
+    if((hero.x + PLAYER_WIDTH/2) > SCREEN_WIDTH/2)
+      {
+        camera->x += PLAYER_SPEED;
+      }
+    if(camera->x > Backg_W - SCREEN_WIDTH)
+      {
+        camera->x = Backg_W - SCREEN_WIDTH;
+      }
+  }
+  else if(acteurs->event.key.keysym.sym == SDLK_LEFT)
+  {
+    
+        camera->x -= PLAYER_SPEED;
+    if((hero.x + PLAYER_WIDTH/2) > (Backg_W - SCREEN_WIDTH/2))
+    {
+      camera->x = Backg_W - SCREEN_WIDTH;
+    }
+      
+    if(camera->x < 0)
+      {
+        camera->x = 0;
+      }
+  }
+  }
+}
+
+/*________________________________________________________________________________________*/
+
+
+
+/*---fonction de deplacement de l hero---*/
+
+void updatePlayer(Hero* hero , Acteurs* acteurs, SDL_Rect camera, SDL_Rect* frame)
+{
+  if(acteurs->event.type == SDL_KEYDOWN)
+  {
+    if(acteurs->event.key.keysym.sym == SDLK_RIGHT)
+    {
+      if(hero->etat == IMMOBILE || hero->etat == WALK_LEFT)
+      {
+        hero->etat = WALK_RIGHT;
+      }
+      if(hero->direction == LEFT)
+        {
+          hero->direction = RIGHT ;
+        }
+      hero->sprite = SDL_LoadBMP("sprite_hero_right.bmp") ;
+      SDL_SetColorKey(hero->sprite, SDL_SRCCOLORKEY, SDL_MapRGB(hero->sprite->format, 255, 255, 255));
+      hero->x += PLAYER_SPEED ;
+      //*frame = AnimationHeroRight(*hero, *acteurs);
+
+      if (hero->x + PLAYER_WIDTH >= Backg_W)
+        {
+          hero->x = Backg_W - PLAYER_WIDTH ;
+        }
+    }
+    else if(acteurs->event.key.keysym.sym == SDLK_LEFT)
+    {
+      if(hero->etat == IMMOBILE || hero->etat == WALK_RIGHT)
+      {
+        hero->etat = WALK_LEFT;
+      }
+      if(hero->direction == RIGHT)
+        {
+          hero->direction = LEFT ;
+        }
+      hero->sprite = SDL_LoadBMP("sprite_hero_left.bmp") ;
+      SDL_SetColorKey(hero->sprite, SDL_SRCCOLORKEY, SDL_MapRGB(hero->sprite->format, 255, 255, 255));
+      hero->x -= PLAYER_SPEED ;
+      //*frame = AnimationHeroLeft(*hero, *acteurs);
+            if (hero->x < 0)
+        {
+          hero->x = 0 ;
+        }
+    }
+  }
+  else if(acteurs->event.type == SDL_KEYUP)
+  {
+    if(hero->etat != IMMOBILE)
+    {
+      hero->etat = IMMOBILE;
+    }
+  }
+  //centerScrollingOnPlayer(*hero, acteurs, &camera);
+
+}
+
+
+
+
+/* Blitte notre héros sur l'écran aux coordonnées x et y */
+
+
+
+SDL_Rect AnimationHero(Hero hero)
+{
+  int i;
+  SDL_Rect frame;
+
+    if(hero.etat == WALK_RIGHT)
+    {
+      i = 0;
+        while(i<MAXF)
+        {
+          frame.x = i*PLAYER_WIDTH;
+          frame.y = 0;
+          frame.w = PLAYER_WIDTH;
+          frame.h = PLAYER_HEIGHT;
+          i++;
+        }
+      if(i = MAXF-1)
+        i = 0;
+    }
+    else if(hero.etat == WALK_LEFT)
+    {
+      i = MAXF-1;
+      while(i>=0)
+        {
+          frame.x = i*PLAYER_WIDTH;
+          frame.y = 0;
+          frame.w = PLAYER_WIDTH;
+          frame.h = PLAYER_HEIGHT;
+          i--;
+        }
+      if(i < 0)
+        i = MAXF-1; 
+    }
+    else if(hero.etat == IMMOBILE)
+    {
+      if(hero.direction == RIGHT)
+      {
+
+        frame.x = 0;
+        frame.y = 0;
+        frame.w = PLAYER_WIDTH;
+        frame.h = PLAYER_HEIGHT;
+      } 
+      else if(hero.direction == LEFT)
+      {
+        frame.x = MAXF-1;
+        frame.y = 0;
+        frame.w = PLAYER_WIDTH;
+        frame.h = PLAYER_HEIGHT;
+      }
+    }
+  return frame;
+}
+
+SDL_Rect AnimationHeroRight(Hero hero, Acteurs acteurs)
+{
+  int i;
+  SDL_Rect FrameRight;
+  if(acteurs.event.type == SDL_KEYDOWN)
+  {
+    if(acteurs.event.key.keysym.sym == SDLK_RIGHT)
+    {
+        for(i=0; i<MAXF; i++)
+        {
+          FrameRight.x = i*PLAYER_WIDTH;
+          FrameRight.y = 0;
+          FrameRight.w = PLAYER_WIDTH;
+          FrameRight.h = PLAYER_HEIGHT;
+        }
+    }
+  }
+  return FrameRight;
+}
+
+
+SDL_Rect AnimationHeroLeft(Hero hero, Acteurs acteurs)
+{
+  int i;
+  SDL_Rect FrameLeft;
+  if(acteurs.event.type == SDL_KEYDOWN)
+  {
+    if(acteurs.event.key.keysym.sym == SDLK_LEFT)
+    {
+        for(i=(MAXF-1); i>=0; i--)
+        {
+          FrameLeft.x = i*PLAYER_WIDTH;
+          FrameLeft.y = 0;
+          FrameLeft.w = PLAYER_WIDTH;
+          FrameLeft.h = PLAYER_HEIGHT;
+        }
+    }
+  }
+  return FrameLeft;
+}
+
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <SDL/SDL.h>
+#include <SDL/SDL_image.h>
+#include <SDL/SDL_mixer.h>
+#include "fonctions.h"
+
+
+int main(int argc, char const *argv[])
+{
+
+  Acteurs acteurs;
+  Boutons boutons;
+  Hero hero ;
+  SDL_Rect camera;
+  SDL_Rect frame;
+    
+
+   //initialisations
+    if( SDL_Init( SDL_INIT_EVERYTHING ) == -1 )
+    {
+        return 1;
+    }
+
+  
+/* appel des fonctions */
+#include "fonctions.h"
+
+acteurs.screen= SDL_SetVideoMode(800,600,32,SDL_HWSURFACE | SDL_DOUBLEBUF);
+SDL_WM_SetCaption( "THE MYSTERIOUS ISLAND", NULL );
+
+    
+    /*SDL_BlitSurface(backg, , acteurs.screen, NULL);
+    SDL_Flip(acteurs.screen);*/
+
+    
+
+int carryon = 1;
+while(carryon)
+{
+    SDL_PollEvent(&acteurs.event);
+    updatePlayer(&hero , &acteurs, camera, &frame) ;
+    frame = AnimationHero(hero);
+    centerScrollingOnPlayer(hero, &acteurs, &camera);
+    
+
+  switch(acteurs.event.type)
+  {
+    case SDL_QUIT:
+             carryon = 0;
+      case SDL_KEYDOWN:
+      if(acteurs.event.key.keysym.sym == SDLK_ESCAPE)
+        {
+          carryon= 0;
+        }
+      break;
+
+  }
+
+
+}
+
+    //LIB
+  SDL_Quit();
+  return 0 ;
+
+}
+
+
+
+
+
+
+
